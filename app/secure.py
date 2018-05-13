@@ -7,3 +7,4 @@ __date__ = '2018/5/12 1:03'
 DEBUG = True
 
 SQLALCHEMY_DATABASE_URI = 'mysql+cymysql://root:gjw605134015@127.0.0.1:3306/fisher'
+SECRET_KEY = 'j8yy9h!V32Jx57O7'

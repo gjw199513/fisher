@@ -5,7 +5,7 @@ from app.view_models.book import BookViewModel, BookCollection
 
 __author__ = 'gjw'
 __date__ = '2018/5/12 12:15'
-from flask import jsonify, request
+from flask import jsonify, request, flash, render_template
 from app.forms.book import SearchForm
 
 from app.libs.helper import is_isbn_or_key
@@ -47,6 +47,12 @@ def search():
         # dict序列化
         # return json.dumps(result), 200, {'content-type': 'application/json'}
         # return jsonify(books)
-        return json.dumps(books, default=lambda o: o.__dict__)
+        # return json.dumps(books, default=lambda o: o.__dict__)
     else:
-        return jsonify(form.errors)
+        flash('搜索的关键字不符合要求，请重新输入关键字')
+        # return jsonify(form.errors)
+    return render_template('search_result.html',books=books)
+
+@web.route('/book/<isbn>/detail')
+def book_detail(isbn):
+    pass
