@@ -11,7 +11,15 @@ class BookViewModel:
         self.image = book['image']
         self.price = book['price']
         self.summary = book['summary']
+        self.isbn = book['isbn']
         self.pages = book['pages']
+
+    # 过滤作者、出版社、价格是否为空值
+    # 将方法变为属性方式调用
+    @property
+    def intro(self):
+        intros = filter(lambda x: True if x else False, [self.author, self.publisher, self.price])
+        return '/'.join(intros)
 
 
 class BookCollection:
