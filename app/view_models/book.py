@@ -13,6 +13,8 @@ class BookViewModel:
         self.summary = book['summary']
         self.isbn = book['isbn']
         self.pages = book['pages']
+        self.pubdate = book['pubdate']
+        self.binding = book['binding']
 
     # 过滤作者、出版社、价格是否为空值
     # 将方法变为属性方式调用

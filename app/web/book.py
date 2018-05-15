@@ -1,7 +1,11 @@
 # -*- coding:utf-8 -*-
 import json
 
+from flask_login import current_user
+from app.models.gift import Gift
+from app.models.wish import Wish
 from app.view_models.book import BookViewModel, BookCollection
+from app.view_models.trade import TradeInfo
 
 __author__ = 'gjw'
 __date__ = '2018/5/12 12:15'
@@ -51,12 +55,35 @@ def search():
     else:
         flash('搜索的关键字不符合要求，请重新输入关键字')
         # return jsonify(form.errors)
-    return render_template('search_result.html',books=books)
+    return render_template('search_result.html', books=books)
 
 
 @web.route('/book/<isbn>/detail')
 def book_detail(isbn):
+    has_in_gifts = False
+    has_in_wishes = False
+
+    # 取出书籍详情数据
     yushu_book = YuShuBook()
     yushu_book.search_by_isbn(isbn)
     book = BookViewModel(yushu_book.first)
-    return render_template('book_detail.html', book=book, wishes=[], gifts=[])
+
+    # 判断当前用户是否登录
+    # 根据用户的需求改变状态
+    if current_user.is_authenticated:
+        if Gift.query.filter_by(uid=current_user.id, isbn=isbn, launched=False).first():
+            has_in_gifts = True
+        if Wish.query.filter_by(uid=current_user.id, isbn=isbn, launched=False).first():
+            has_in_wishes = True
+
+    # 所有赠送者信息
+    trade_gifts = Gift.query.filter_by(isbn=isbn, launched=False).all()
+    # 所有索要者信息
+    trade_wishes = Wish.query.filter_by(isbn=isbn, launched=False).all()
+
+    trade_wishes_model = TradeInfo(trade_wishes)
+    trade_gifts_model = TradeInfo(trade_gifts)
+    return render_template('book_detail.html', book=book,
+                           wishes=trade_wishes_model,
+                           gifts=trade_gifts_model,
+                           has_in_gifts=has_in_gifts, has_in_wished=has_in_wishes)

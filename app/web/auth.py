@@ -14,10 +14,11 @@ def register():
     form = RegisterForm(request.form)
     # 当为POST请求进行校验
     if request.method == "POST" and form.validate():
-        user = User()
-        user.set_attrs(form.data)
-        db.session.add(user)
-        db.session.commit()
+        with db.auto_commit():
+            user = User()
+            user.set_attrs(form.data)
+            db.session.add(user)
+        # db.session.commit()
         # 重定向到login视图函数
         return redirect(url_for('web.login'))
 
@@ -35,7 +36,7 @@ def login():
             # 获取页面参数
             next = request.args.get('next')
             # 防止重定向攻击
-            if not next and not next.startswith('/'):
+            if not next or not next.startswith('/'):
                 next = url_for('web.index')
             return redirect(next)
         else:
