@@ -1,6 +1,9 @@
-__author__ = ''
+from app.view_models.trade import MyTrades
 
-from flask import current_app, flash, redirect, url_for
+__author__ = 'gjw'
+__date__ = '2018/5/13 20:16'
+
+from flask import current_app, flash, redirect, url_for, render_template
 
 from app.models.base import db
 
@@ -13,7 +16,12 @@ from . import web
 
 @web.route('/my/wish')
 def my_wish():
-    pass
+    uid = current_user.id
+    wishes_of_mine = Wish.get_user_wishes(uid)
+    isbn_list = [wish.isbn for wish in wishes_of_mine]
+    gift_count_list = Wish.get_gifts_counts(isbn_list)
+    view_model = MyTrades(wishes_of_mine, gift_count_list)
+    return render_template('my_wish.html', wishes=view_model.trades)
 
 
 @web.route('/wish/book/<isbn>')
